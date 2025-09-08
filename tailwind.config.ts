@@ -22,10 +22,12 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          glow: "hsl(var(--primary-glow))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
+          glow: "hsl(var(--secondary-glow))",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
@@ -46,6 +48,22 @@ export default {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+        },
+        medical: {
+          blue: "hsl(var(--medical-blue))",
+          light: "hsl(var(--medical-light))",
+        },
+        health: {
+          good: "hsl(var(--health-good))",
+          warning: "hsl(var(--health-warning))", 
+          critical: "hsl(var(--health-critical))",
+        },
+        alert: {
+          red: "hsl(var(--alert-red))",
+          orange: "hsl(var(--alert-orange))",
+        },
+        success: {
+          green: "hsl(var(--success-green))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
