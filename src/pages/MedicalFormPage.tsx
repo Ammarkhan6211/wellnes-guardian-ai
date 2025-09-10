@@ -1,42 +1,57 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useAppContext, MedicalInfo } from '@/contexts/AppContext';
 import { useToast } from '@/hooks/use-toast';
-import { findDiseaseCode } from '@/utils/diseaseCodeMapping';
-
-const medicalSchema = z.object({
-  diseaseDetails: z.string().min(5, 'Please provide more details about your condition'),
-  medicines: z.string().min(3, 'Please list your current medicines'),
-});
-
-type MedicalFormData = z.infer<typeof medicalSchema>;
+import { findDiseaseCode, DISEASES, DISEASE_MEDICINE_MAPPING } from '@/utils/diseaseCodeMapping';
 
 const MedicalFormPage = () => {
   const navigate = useNavigate();
   const { userData, setMedicalInfo, setMappedCodes } = useAppContext();
   const { toast } = useToast();
+  
+  const [selectedDisease, setSelectedDisease] = useState<string>('');
+  const [selectedMedicines, setSelectedMedicines] = useState<string[]>([]);
 
-  const form = useForm<MedicalFormData>({
-    resolver: zodResolver(medicalSchema),
-    defaultValues: {
-      diseaseDetails: '',
-      medicines: '',
-    },
-  });
+  const handleMedicineChange = (medicine: string, checked: boolean) => {
+    if (checked) {
+      setSelectedMedicines(prev => [...prev, medicine]);
+    } else {
+      setSelectedMedicines(prev => prev.filter(m => m !== medicine));
+    }
+  };
 
-  const onSubmit = (data: MedicalFormData) => {
-    setMedicalInfo(data as MedicalInfo);
+  const onSubmit = () => {
+    if (!selectedDisease) {
+      toast({
+        title: "Error",
+        description: "Please select a disease",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (selectedMedicines.length === 0) {
+      toast({
+        title: "Error", 
+        description: "Please select at least one medicine",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const medicalInfo: MedicalInfo = {
+      selectedDisease,
+      selectedMedicines
+    };
+    
+    setMedicalInfo(medicalInfo);
     
     // Map disease to ICD-11 and NAMASTE codes
-    const codes = findDiseaseCode(data.diseaseDetails);
+    const codes = findDiseaseCode(selectedDisease);
     if (codes) {
       setMappedCodes(codes);
     }
@@ -64,49 +79,54 @@ const MedicalFormPage = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="diseaseDetails"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Disease Details</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="Describe your current medical condition(s) - e.g., diabetes, hypertension, asthma..."
-                        className="min-h-[100px]"
-                        {...field} 
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Select Disease</label>
+              <Select value={selectedDisease} onValueChange={setSelectedDisease}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose your condition..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {DISEASES.map((disease) => (
+                    <SelectItem key={disease} value={disease}>
+                      {disease.charAt(0).toUpperCase() + disease.slice(1)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {selectedDisease && (
+              <div className="space-y-3">
+                <label className="text-sm font-medium">Select Current Medicines</label>
+                <div className="grid grid-cols-1 gap-3">
+                  {DISEASE_MEDICINE_MAPPING[selectedDisease]?.map((medicine) => (
+                    <div key={medicine} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={medicine}
+                        checked={selectedMedicines.includes(medicine)}
+                        onCheckedChange={(checked) => handleMedicineChange(medicine, !!checked)}
                       />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="medicines"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Current Medicines</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="List all medicines you are currently taking (name, dosage, frequency)..."
-                        className="min-h-[100px]"
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <Button type="submit" className="w-full">
-                Save and Continue to Dashboard
-              </Button>
-            </form>
-          </Form>
+                      <label
+                        htmlFor={medicine}
+                        className="text-sm font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        {medicine}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            <Button 
+              onClick={onSubmit} 
+              className="w-full"
+              disabled={!selectedDisease || selectedMedicines.length === 0}
+            >
+              Save and Continue to Dashboard
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>

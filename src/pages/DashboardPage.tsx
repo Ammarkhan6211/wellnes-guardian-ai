@@ -69,15 +69,23 @@ const DashboardPage = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <h4 className="text-sm font-medium text-muted-foreground mb-2">Disease Details</h4>
-                <p className="text-sm bg-muted/50 p-3 rounded-md">{medicalInfo.diseaseDetails}</p>
+                <h4 className="text-sm font-medium text-muted-foreground mb-2">Selected Disease</h4>
+                <Badge variant="secondary" className="text-sm px-3 py-1">
+                  {medicalInfo.selectedDisease.charAt(0).toUpperCase() + medicalInfo.selectedDisease.slice(1)}
+                </Badge>
               </div>
               <div>
                 <h4 className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-2">
                   <Pill className="h-4 w-4" />
                   Current Medicines
                 </h4>
-                <p className="text-sm bg-muted/50 p-3 rounded-md">{medicalInfo.medicines}</p>
+                <div className="flex flex-wrap gap-2">
+                  {medicalInfo.selectedMedicines.map((medicine, index) => (
+                    <Badge key={index} variant="outline" className="text-sm">
+                      {medicine}
+                    </Badge>
+                  ))}
+                </div>
               </div>
             </CardContent>
           </Card>

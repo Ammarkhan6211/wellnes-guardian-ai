@@ -8,8 +8,8 @@ export interface UserData {
 }
 
 export interface MedicalInfo {
-  diseaseDetails: string;
-  medicines: string;
+  selectedDisease: string;
+  selectedMedicines: string[];
 }
 
 export interface MappedCodes {

@@ -4,31 +4,42 @@ export interface DiseaseCode {
 }
 
 export const DISEASE_CODE_MAPPING: Record<string, DiseaseCode> = {
-  diabetes: {
+  "diabetes": {
     icd11: "5A11",
     namaste: "AYU123"
   },
-  hypertension: {
+  "hypertension": {
     icd11: "BA00", 
     namaste: "AYU456"
   },
-  asthma: {
+  "asthma": {
     icd11: "CA23",
     namaste: "AYU789"
   },
-  "high blood pressure": {
-    icd11: "BA00",
-    namaste: "AYU456"
+  "heart disease": {
+    icd11: "BA40",
+    namaste: "AYU321"
   },
-  "type 2 diabetes": {
-    icd11: "5A11",
-    namaste: "AYU123"
+  "arthritis": {
+    icd11: "FA12",
+    namaste: "AYU654"
   },
-  "bronchial asthma": {
-    icd11: "CA23",
-    namaste: "AYU789"
+  "depression": {
+    icd11: "MB20",
+    namaste: "AYU987"
   }
 };
+
+export const DISEASE_MEDICINE_MAPPING: Record<string, string[]> = {
+  "diabetes": ["Metformin", "Insulin", "Glipizide"],
+  "hypertension": ["Amlodipine", "Losartan", "Lisinopril"],
+  "asthma": ["Salbutamol", "Budesonide", "Montelukast"],
+  "heart disease": ["Aspirin", "Atorvastatin", "Metoprolol"],
+  "arthritis": ["Ibuprofen", "Methotrexate", "Prednisone"],
+  "depression": ["Sertraline", "Fluoxetine", "Escitalopram"]
+};
+
+export const DISEASES = Object.keys(DISEASE_CODE_MAPPING);
 
 export const findDiseaseCode = (diseaseText: string): DiseaseCode | null => {
   const normalizedText = diseaseText.toLowerCase().trim();
